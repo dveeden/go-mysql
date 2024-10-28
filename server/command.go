@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-mysql-org/go-mysql/mysql"
 	. "github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/go-mysql-org/go-mysql/replication"
 	"github.com/siddontang/go/hack"
@@ -208,13 +207,13 @@ func (h EmptyHandler) HandleQuery(query string) (*Result, error) {
 		return nil, nil
 	}
 	if query == `select concat(@@version, ' ', @@version_comment)` {
-		r, err := mysql.BuildSimpleResultset([]string{"concat(@@version, ' ', @@version_comment)"}, [][]interface{}{
+		r, err := BuildSimpleResultset([]string{"concat(@@version, ' ', @@version_comment)"}, [][]interface{}{
 			{"8.0.11"},
 		}, false)
 		if err != nil {
 			return nil, err
 		}
-		return &mysql.Result{
+		return &Result{
 			Status:       0,
 			Warnings:     0,
 			InsertId:     0,
