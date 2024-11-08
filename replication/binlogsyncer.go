@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -424,6 +425,15 @@ func (b *BinlogSyncer) GetNextPosition() Position {
 	return b.nextPos
 }
 
+func (b *BinlogSyncer) checkFlavor() {
+	serverVersion := b.c.GetServerVersion()
+	if b.cfg.Flavor != MariaDBFlavor &&
+		strings.Contains(b.c.GetServerVersion(), "MariaDB") {
+		b.cfg.Logger.Errorf("misconfigured flavor (%s) for server %s",
+			b.cfg.Flavor, serverVersion)
+	}
+}
+
 // StartSync starts syncing from the `pos` position.
 func (b *BinlogSyncer) StartSync(pos Position) (*BinlogStreamer, error) {
 	b.cfg.Logger.Infof("begin to sync binlog from position %s", pos)
@@ -438,6 +448,8 @@ func (b *BinlogSyncer) StartSync(pos Position) (*BinlogStreamer, error) {
 	if err := b.prepareSyncPos(pos); err != nil {
 		return nil, errors.Trace(err)
 	}
+
+	b.checkFlavor()
 
 	return b.startDumpStream(), nil
 }
@@ -476,6 +488,8 @@ func (b *BinlogSyncer) StartSyncGTID(gset GTIDSet) (*BinlogStreamer, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	b.checkFlavor()
 
 	return b.startDumpStream(), nil
 }
