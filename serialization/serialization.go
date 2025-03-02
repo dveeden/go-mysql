@@ -74,6 +74,7 @@ type Field struct {
 // FieldType represents a `type_field`
 type FieldType interface {
 	fmt.Stringer
+	decode(data []byte, pos uint64) (uint64, error)
 }
 
 // FieldIntFixed is for values with a fixed length.
@@ -92,7 +93,7 @@ func (f FieldIntFixed) String() string {
 	return fmt.Sprintf("0x%x", f.Value)
 }
 
-func (f *FieldIntFixed) decode(data []byte, pos uint64) (uint64, error) {
+func (f FieldIntFixed) decode(data []byte, pos uint64) (uint64, error) {
 	var b bytes.Buffer
 	b.Grow(f.Length * 2) // output is between 1 and 2 times that of the input
 
@@ -135,7 +136,7 @@ func (f FieldIntVar) String() string {
 	return fmt.Sprintf("%d", f.Value)
 }
 
-func (f *FieldIntVar) decode(data []byte, pos uint64) (uint64, error) {
+func (f FieldIntVar) decode(data []byte, pos uint64) (uint64, error) {
 	var val interface{}
 	val, pos, err := decodeVar(data, pos, false)
 	if err != nil {
@@ -159,7 +160,7 @@ func (f FieldUintVar) String() string {
 	return fmt.Sprintf("%d", f.Value)
 }
 
-func (f *FieldUintVar) decode(data []byte, pos uint64) (uint64, error) {
+func (f FieldUintVar) decode(data []byte, pos uint64) (uint64, error) {
 	var val interface{}
 	val, pos, err := decodeVar(data, pos, true)
 	if err != nil {
@@ -178,7 +179,7 @@ type FieldString struct {
 	Value string
 }
 
-func (f *FieldString) decode(data []byte, pos uint64) (uint64, error) {
+func (f FieldString) decode(data []byte, pos uint64) (uint64, error) {
 	if len(data) < int(pos)+1 {
 		return pos, errors.New("string truncated, expected at least one byte")
 	}
@@ -226,35 +227,9 @@ func Unmarshal(data []byte, v interface{}) error {
 			}
 			m.Fields[i].ID = data[pos] >> 1
 			pos++
-			var n uint64
-			var err error
-			switch f := m.Fields[i].Type.(type) {
-			case FieldIntFixed:
-				n, err = f.decode(data, pos)
-				if err != nil {
-					return err
-				}
-				m.Fields[i].Type = f
-			case FieldUintVar:
-				n, err = f.decode(data, pos)
-				if err != nil {
-					return err
-				}
-				m.Fields[i].Type = f
-			case FieldIntVar:
-				n, err = f.decode(data, pos)
-				if err != nil {
-					return err
-				}
-				m.Fields[i].Type = f
-			case FieldString:
-				n, err = f.decode(data, pos)
-				if err != nil {
-					return err
-				}
-				m.Fields[i].Type = f
-			default:
-				return fmt.Errorf("unsupported field type: %T", m.Fields[i].Type)
+			n, err := m.Fields[i].Type.decode(data, pos)
+			if err != nil {
+				return err
 			}
 			pos = n
 		}

@@ -561,52 +561,52 @@ func (e *GtidTaggedLogEvent) Decode(data []byte) error {
 			Fields: []serialization.Field{
 				{
 					Name: "gtid_flags",
-					Type: serialization.FieldIntFixed{
+					Type: &serialization.FieldIntFixed{
 						Length: 1,
 					},
 				},
 				{
 					Name: "uuid",
-					Type: serialization.FieldIntFixed{
+					Type: &serialization.FieldIntFixed{
 						Length: 16,
 					},
 				},
 				{
 					Name: "gno",
-					Type: serialization.FieldIntVar{},
+					Type: &serialization.FieldIntVar{},
 				},
 				{
 					Name: "tag",
-					Type: serialization.FieldString{},
+					Type: &serialization.FieldString{},
 				},
 				{
 					Name: "last_committed",
-					Type: serialization.FieldIntVar{},
+					Type: &serialization.FieldIntVar{},
 				},
 				{
 					Name: "sequence_number",
-					Type: serialization.FieldIntVar{},
+					Type: &serialization.FieldIntVar{},
 				},
 				{
 					Name: "immediate_commit_timestamp",
-					Type: serialization.FieldUintVar{},
+					Type: &serialization.FieldUintVar{},
 				},
 				{
 					Name:     "original_commit_timestamp",
-					Type:     serialization.FieldUintVar{},
+					Type:     &serialization.FieldUintVar{},
 					Optional: true,
 				},
 				{
 					Name: "transaction_length",
-					Type: serialization.FieldUintVar{},
+					Type: &serialization.FieldUintVar{},
 				},
 				{
 					Name: "immediate_server_version",
-					Type: serialization.FieldUintVar{},
+					Type: &serialization.FieldUintVar{},
 				},
 				{
 					Name:     "original_server_version",
-					Type:     serialization.FieldUintVar{},
+					Type:     &serialization.FieldUintVar{},
 					Optional: true,
 				},
 				{
