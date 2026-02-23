@@ -1,5 +1,6 @@
 ### Tag v1.14.0 (2026-02-23)
 
+* CI: Also test on ARM64. [#1112](https://github.com/go-mysql-org/go-mysql/pull/1112) ([dveeden](https://github.com/dveeden))
 * Adds OnTableNotFound() error handler to Canal. [#1105](https://github.com/go-mysql-org/go-mysql/pull/1105) ([dbnski](https://github.com/dbnski))
 * Driver: fix no db in DSN will panic. [#1106](https://github.com/go-mysql-org/go-mysql/pull/1106) ([lance6716](https://github.com/lance6716))
 * Driver: export Connector for structured sql.OpenDB. [#1109](https://github.com/go-mysql-org/go-mysql/pull/1109) ([lance6716](https://github.com/lance6716))
